@@ -1,4 +1,5 @@
 # SubredditAnalytics Hadoop MR Jobs
+[![Build Status](https://travis-ci.org/TomDunn/SubredditAnalyticsHadoopMRJobs.svg?branch=master)](https://travis-ci.org/TomDunn/SubredditAnalyticsHadoopMRJobs)
 
 Jobs for transforming data logged from Reddit into useful analytics.
 
