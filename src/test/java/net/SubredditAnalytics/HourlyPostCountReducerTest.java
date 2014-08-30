@@ -32,7 +32,7 @@ public class HourlyPostCountReducerTest {
 
         final Text key = new Text("funny|123123123");
         reduceDriver.withInput(key, counts);
-        reduceDriver.withOutput(key, new IntWritable(6));
+        reduceDriver.withOutput(key, new IntWritable(5));
         reduceDriver.runTest();
     }
 }
