@@ -1,0 +1,32 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.5
+version = '1.0'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.11'
+    testCompile files('lib/mrunit-1.1.0-hadoop1.jar')
+    compile 'org.apache.hadoop:hadoop-core:1.2.1'
+    compile 'com.google.guava:guava:17.0'
+    compile 'com.googlecode.json-simple:json-simple:1.1.1'
+    compile 'joda-time:joda-time:2.4'
+    testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'org.powermock:powermock-api-mockito:1.5.5'
+}
+
+jar {
+    version = "0.0.1"
+    manifest {
+        attributes 'Main-Class': 'net.SubredditAnalytics.HourlyPostCount'
+    }
+
+    from {
+        configurations.compile.collect {it.isDirectory() ? it : zipTree(it) }
+    }
+}
