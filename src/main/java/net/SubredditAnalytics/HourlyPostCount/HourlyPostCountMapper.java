@@ -25,7 +25,7 @@ public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,IntWrit
 
 
         try {
-            final JSONObject redditSubmissionJSON = (JSONObject) parser.parse(columns[2]);
+            final JSONObject redditSubmissionJSON = (JSONObject) parser.parse(columns[1]);
 
             final Number createdUTC = (Number) redditSubmissionJSON.get("created_utc");
             final String subreddit  = (String) redditSubmissionJSON.get("subreddit");

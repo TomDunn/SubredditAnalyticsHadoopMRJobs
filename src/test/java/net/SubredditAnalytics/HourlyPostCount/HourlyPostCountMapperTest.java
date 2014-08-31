@@ -17,7 +17,7 @@ import java.io.IOException;
 public class HourlyPostCountMapperTest {
 
     MapDriver<LongWritable, Text, Text, IntWritable> mapDriver;
-    private final static String jsonLine = "LOGCOL1\tLOGCOL2\t{\"subreddit\":\"funny\",\"created_utc\":1409259817.0}";
+    private final static String jsonLine = "POST_ID\t{\"subreddit\":\"funny\",\"created_utc\":1409259817.0}";
 
     @Before
     public void setUp() {
