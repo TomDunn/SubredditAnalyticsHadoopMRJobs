@@ -1,41 +1,41 @@
 package net.SubredditAnalytics;
 
-import org.apache.hadoop.conf.Configuration;
+import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountJobFactory;
+import net.SubredditAnalytics.Jobs.MRJobFactory;
+import net.SubredditAnalytics.UniquePostFilter.UniquePostFilterJobFactory;
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.io.IntWritable;
-import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
-import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
-import org.apache.hadoop.mapreduce.lib.output.TextOutputFormat;
-
-import net.SubredditAnalytics.UniquePostFilter.UniquePostMapper;
-import net.SubredditAnalytics.UniquePostFilter.UniquePostReducer;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by tom on 8/30/14.
  */
 public class MRJobRunner {
     public static void main(String[] args) throws IOException, InterruptedException, ClassNotFoundException {
-        Configuration conf = new Configuration();
+        if (args.length < 3) {
+            throw new IllegalArgumentException("Three arguments are required: JobName InPath OutPath");
+        }
 
-        Job job = new Job(conf, "postUniqueFilter");
-        job.setJarByClass(MRJobRunner.class);
+        final Map<String, MRJobFactory> jobNameToFactory = new HashMap<String, MRJobFactory>();
 
-        job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        jobNameToFactory.put("filterPosts", new UniquePostFilterJobFactory());
+        jobNameToFactory.put("hourlyPostCounts", new HourlyPostCountJobFactory());
 
-        job.setMapperClass(UniquePostMapper.class);
-        job.setReducerClass(UniquePostReducer.class);
+        final String jobName = args[0];
 
-        job.setInputFormatClass(TextInputFormat.class);
-        job.setOutputFormatClass(TextOutputFormat.class);
+        if (!jobNameToFactory.containsKey(jobName)) {
+            throw new IllegalArgumentException("No such JobName: " + jobName);
+        }
 
-        FileInputFormat.addInputPath(job, new Path(args[0]));
-        FileOutputFormat.setOutputPath(job, new Path(args[1]));
+        Job job = jobNameToFactory.get(jobName).makeMapReduceJob();
+
+        FileInputFormat.addInputPath(job, new Path(args[1]));
+        FileOutputFormat.setOutputPath(job, new Path(args[2]));
 
         job.waitForCompletion(true);
     }
