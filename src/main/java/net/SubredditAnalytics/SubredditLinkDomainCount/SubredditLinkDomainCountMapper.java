@@ -1,5 +1,6 @@
 package net.SubredditAnalytics.SubredditLinkDomainCount;
 
+import net.SubredditAnalytics.Model.RedditPost;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -13,21 +14,15 @@ import java.io.IOException;
  * Created by tom on 8/30/14.
  */
 public class SubredditLinkDomainCountMapper extends Mapper<Text, Text, Text, IntWritable> {
-    private final JSONParser parser = new JSONParser();
     private final static IntWritable count = new IntWritable(1);
     private Text subredditDomainKey = new Text();
 
     protected void map(Text key, Text value, Context context) throws InterruptedException, IOException {
+        final RedditPost post = RedditPost.fromJSON(value.toString());
+        final String subreddit = post.getSubreddit().toString();
+        final String domain = post.getDomain().toString();
 
-        try {
-            final JSONObject postJSON = (JSONObject) parser.parse(value.toString());
-            final String subreddit = (String) postJSON.get("subreddit");
-            final String domain    = (String) postJSON.get("domain");
-
-            subredditDomainKey.set(subreddit + "|" + domain);
-            context.write(subredditDomainKey, count);
-        } catch (ParseException parseException) {
-            return;
-        }
+        subredditDomainKey.set(subreddit + "|" + domain);
+        context.write(subredditDomainKey, count);
     }
 }

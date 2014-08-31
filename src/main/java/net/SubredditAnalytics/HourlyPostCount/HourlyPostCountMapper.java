@@ -1,5 +1,6 @@
 package net.SubredditAnalytics.HourlyPostCount;
 
+import net.SubredditAnalytics.Model.RedditPost;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.IntWritable;
@@ -23,19 +24,13 @@ public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,IntWrit
     protected void map(LongWritable key, Text value, Context context) throws java.io.IOException, InterruptedException {
         String[] columns = value.toString().split("\t+");
 
+        final RedditPost post = RedditPost.fromJSON(columns[1]);
+        final long createdUTC = post.getCreated_utc().get();
+        final String subreddit = post.getSubreddit().toString();
 
-        try {
-            final JSONObject redditSubmissionJSON = (JSONObject) parser.parse(columns[1]);
+        time.set(this.makeSubredditHourlyKey(subreddit, createdUTC));
 
-            final Number createdUTC = (Number) redditSubmissionJSON.get("created_utc");
-            final String subreddit  = (String) redditSubmissionJSON.get("subreddit");
-
-            time.set(this.makeSubredditHourlyKey(subreddit, createdUTC));
-
-            context.write(time, count);
-        } catch (org.json.simple.parser.ParseException e) {
-            return;
-        }
+        context.write(time, count);
     }
 
     /* package private */ String makeSubredditHourlyKey(final String subredditName, final Number createdUTC) {
