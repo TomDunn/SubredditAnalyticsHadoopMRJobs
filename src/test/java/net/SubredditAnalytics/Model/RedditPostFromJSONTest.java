@@ -1,4 +1,4 @@
-package net.SubredditAnalytics.Parser;
+package net.SubredditAnalytics.Model;
 
 import net.SubredditAnalytics.Model.RedditPost;
 import static org.junit.Assert.*;
@@ -8,7 +8,7 @@ import org.junit.Test;
 /**
  * Created by tom on 8/31/14.
  */
-public class RedditPostFromJSONFactoryTest {
+public class RedditPostFromJSONTest {
     // ok input
     final String goodJSON = "{\"domain\":\"self.Python\",\"subreddit\":\"Python\",\"selftext\":\"I like Python\",\"id\":\"2eulrh\",\"author\":\"rhgrant10\",\"score\":15,\"over_18\":false,\"thumbnail\":\"\",\"subreddit_id\":\"t5_2qh0y\",\"downs\":0,\"is_self\":true,\"name\":\"t3_2eulrh\",\"url\":\"http://google.com\",\"title\":\"First job\",\"created_utc\":1409254019.0,\"ups\":15,\"last_seen\":1409388890}";
 
@@ -21,16 +21,16 @@ public class RedditPostFromJSONFactoryTest {
     // missing numeric fields; score, downs, ups, created_utc
     final String missingNumericFields = "{\"domain\":\"self.Python\",\"subreddit\":\"Python\",\"selftext\":\"I like Python\",\"id\":\"2eulrh\",\"over_18\":false,\"is_self\":true}";
 
-    RedditPostFromJSONFactory factory;
+    RedditPost post;
 
     @Before
     public void setUp() {
-        factory = new RedditPostFromJSONFactory();
+        post = new RedditPost();
     }
 
     @Test
     public void happyCase() {
-        RedditPost post = factory.fromJSON(goodJSON);
+        post.loadFromJSONString(goodJSON);
 
         assertEquals("domain should be set", "self.Python", post.getDomain().toString());
         assertEquals("subreddit should be set", "Python", post.getSubreddit().toString());
@@ -53,7 +53,7 @@ public class RedditPostFromJSONFactoryTest {
 
     @Test
     public void missingOver18() {
-        RedditPost post = factory.fromJSON(missingBoolean);
+        post.loadFromJSONString(missingBoolean);
 
         assertEquals("over 18 should be defaulted to false", false, post.getOver_18().get());
         assertEquals("is_self should be false", false, post.getIs_self().get());
@@ -61,7 +61,7 @@ public class RedditPostFromJSONFactoryTest {
 
     @Test
     public void missingStringFields() {
-        RedditPost post = factory.fromJSON(missingFields);
+        post.loadFromJSONString(missingFields);
 
         assertEquals("domain should be empty", "", post.getDomain().toString());
         assertEquals("subreddit should be empty", "", post.getSubreddit().toString());
@@ -77,7 +77,7 @@ public class RedditPostFromJSONFactoryTest {
 
     @Test
     public void missingNumericFields() {
-        RedditPost post = factory.fromJSON(missingNumericFields);
+        post.loadFromJSONString(missingNumericFields);
 
         assertEquals("score should be 0", 0, post.getScore().get());
         assertEquals("down votes is 0", 0, post.getDowns().get());

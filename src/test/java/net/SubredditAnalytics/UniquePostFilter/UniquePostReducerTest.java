@@ -1,7 +1,6 @@
 package net.SubredditAnalytics.UniquePostFilter;
 
 import net.SubredditAnalytics.Model.RedditPost;
-import net.SubredditAnalytics.Parser.RedditPostFromJSONFactory;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.ReduceDriver;
 import org.apache.hadoop.mrunit.types.Pair;
@@ -10,7 +9,6 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -18,7 +16,6 @@ import java.util.List;
  */
 public class UniquePostReducerTest {
     private ReduceDriver<Text, RedditPost, Text, RedditPost> reduceDriver;
-    private RedditPostFromJSONFactory jsonPostFactory;
 
     private final String post1_id = "t3_2euwng";
     private final String post1_V1 = "{\"name\":\"t3_2euwng\",\"last_seen\":1409389198}";
@@ -36,8 +33,6 @@ public class UniquePostReducerTest {
         reduceDriver = new ReduceDriver<Text, RedditPost, Text, RedditPost>();
         UniquePostReducer reducer = new UniquePostReducer();
         reduceDriver.setReducer(reducer);
-
-        jsonPostFactory = new RedditPostFromJSONFactory();
     }
 
     @Test
@@ -45,18 +40,18 @@ public class UniquePostReducerTest {
         List<RedditPost> post1Values = new ArrayList<RedditPost>();
         List<RedditPost> post2Values = new ArrayList<RedditPost>();
 
-        post1Values.add(jsonPostFactory.fromJSON(post1_V1));
-        post1Values.add(jsonPostFactory.fromJSON(post1_V2));
-        post1Values.add(jsonPostFactory.fromJSON(post1_V3));
+        post1Values.add(RedditPost.fromJSON(post1_V1));
+        post1Values.add(RedditPost.fromJSON(post1_V2));
+        post1Values.add(RedditPost.fromJSON(post1_V3));
 
-        post2Values.add(jsonPostFactory.fromJSON(post2_V1));
-        post2Values.add(jsonPostFactory.fromJSON(post2_V2));
+        post2Values.add(RedditPost.fromJSON(post2_V1));
+        post2Values.add(RedditPost.fromJSON(post2_V2));
 
         reduceDriver.withInput(new Text(post1_id), post1Values);
         reduceDriver.withInput(new Text(post2_id), post2Values);
 
-        reduceDriver.withOutput(new Text(post1_id), jsonPostFactory.fromJSON(post1_V3));
-        reduceDriver.withOutput(new Text(post2_id), jsonPostFactory.fromJSON(post2_V2));
+        reduceDriver.withOutput(new Text(post1_id), RedditPost.fromJSON(post1_V3));
+        reduceDriver.withOutput(new Text(post2_id), RedditPost.fromJSON(post2_V2));
 
         reduceDriver.runTest();
     }

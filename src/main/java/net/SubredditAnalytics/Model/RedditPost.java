@@ -2,6 +2,8 @@ package net.SubredditAnalytics.Model;
 
 import org.apache.hadoop.io.*;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -162,6 +164,73 @@ public class RedditPost implements WritableComparable<RedditPost> {
         obj.put("last_seen", last_seen.get());
 
         return obj.toString();
+    }
+
+    public void loadFromJSONString(final String JSON) {
+        final JSONParser parser = new JSONParser();
+
+        try {
+            final JSONObject postJSON = (JSONObject) parser.parse(JSON);
+
+            final String domain = (String) postJSON.get("domain");
+            this.setDomain(new Text(domain == null ? "" : domain));
+
+            final String subreddit = (String) postJSON.get("subreddit");
+            this.setSubreddit(new Text(subreddit == null ? "" : subreddit));
+
+            final String selftext = (String) postJSON.get("selftext");
+            this.setSelftext(new Text(selftext == null ? "" : selftext));
+
+            final String id = (String) postJSON.get("id");
+            this.setId(new Text(id == null ? "" : id));
+
+            final String author = (String) postJSON.get("author");
+            this.setAuthor(new Text(author == null ? "" : author));
+
+            final Number score = (Number) postJSON.get("score");
+            this.setScore(new IntWritable(score == null ? 0 : score.intValue()));
+
+            final Boolean over_18 = (Boolean) postJSON.get("over_18");
+            this.setOver_18(new BooleanWritable(over_18 == null ? false : over_18));
+
+            final String thumbnail = (String) postJSON.get("thumbnail");
+            this.setThumbnail(new Text(thumbnail == null ? "" : thumbnail));
+
+            final String subreddit_id = (String) postJSON.get("subreddit_id");
+            this.setSubreddit_id(new Text(subreddit_id == null ? "" : subreddit_id));
+
+            final Number downs = (Number) postJSON.get("downs");
+            this.setDowns(new IntWritable(downs == null ? 0 : downs.intValue()));
+
+            final Boolean is_self = (Boolean) postJSON.get("is_self");
+            this.setIs_self(new BooleanWritable(is_self == null ? false : is_self));
+
+            final String name = (String) postJSON.get("name");
+            this.setName(new Text(name == null ? "" : name));
+
+            final String url = (String) postJSON.get("url");
+            this.setUrl(new Text(url == null ? "" : url));
+
+            final String title = (String) postJSON.get("title");
+            this.setTitle(new Text(title == null ? "" : title));
+
+            final Number created_utc = (Number) postJSON.get("created_utc");
+            this.setCreated_utc(new LongWritable(created_utc == null ? 0L : created_utc.longValue()));
+
+            final Number ups = (Number) postJSON.get("ups");
+            this.setUps(new IntWritable(ups == null ? 0 : ups.intValue()));
+
+            final Number last_seen = (Number) postJSON.get("last_seen");
+            this.setLast_seen(new LongWritable(last_seen == null ? 0 : last_seen.longValue()));
+        } catch (ParseException parseException) {
+            // silently
+        }
+    }
+
+    public static RedditPost fromJSON(final String JSON) {
+        RedditPost post = new RedditPost();
+        post.loadFromJSONString(JSON);
+        return post;
     }
 
     public Text getDomain() {
