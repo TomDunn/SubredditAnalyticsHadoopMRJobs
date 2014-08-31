@@ -1,5 +1,6 @@
 package net.SubredditAnalytics.UniquePostFilter;
 
+import net.SubredditAnalytics.Model.RedditPost;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Reducer;
 import org.json.simple.JSONObject;
@@ -11,27 +12,21 @@ import java.io.IOException;
 /**
  * Created by tom on 8/30/14.
  */
-public class UniquePostReducer extends Reducer<Text, Text, Text, Text> {
-    private final JSONParser parser = new JSONParser();
+public class UniquePostReducer extends Reducer<Text, RedditPost, Text, RedditPost> {
 
-    protected void reduce(Text key, Iterable<Text> values, Context context) throws IOException, InterruptedException {
+    protected void reduce(Text key, Iterable<RedditPost> posts, Context context) throws IOException, InterruptedException {
         long maxLastSeen = 0L;
-        Text latestPostJson = new Text();
+        RedditPost latestPost = new RedditPost();
 
-        for (Text post : values) {
-            try {
-                final JSONObject postJson = (JSONObject) parser.parse(post.toString());
-                final long lastSeen = ((Number) postJson.get("last_seen")).longValue();
+        for (RedditPost post : posts) {
+            final long lastSeen = post.getLast_seen().get();
 
-                if (lastSeen > maxLastSeen) {
-                    maxLastSeen = lastSeen;
-                    latestPostJson.set(post);
-                }
-            } catch (ParseException parseException) {
-                continue;
+            if (lastSeen > maxLastSeen) {
+                maxLastSeen = lastSeen;
+                latestPost = post;
             }
         }
 
-        context.write(key, latestPostJson);
+        context.write(key, latestPost);
     }
 }

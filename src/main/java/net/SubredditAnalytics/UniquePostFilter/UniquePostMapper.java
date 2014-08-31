@@ -1,5 +1,7 @@
 package net.SubredditAnalytics.UniquePostFilter;
 
+import net.SubredditAnalytics.Model.RedditPost;
+import net.SubredditAnalytics.Parser.RedditPostFromJSONFactory;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Mapper;
@@ -12,24 +14,21 @@ import java.io.IOException;
 /**
  * Created by tom on 8/30/14.
  */
-public class UniquePostMapper extends Mapper<LongWritable, Text, Text, Text> {
-    private final JSONParser parser = new JSONParser();
+public class UniquePostMapper extends Mapper<LongWritable, Text, Text, RedditPost> {
+    private RedditPostFromJSONFactory jsonPostFactory = new RedditPostFromJSONFactory();
     private Text postName = new Text();
-    private Text postJSON = new Text();
 
     protected void map(LongWritable key, Text value, Context context) throws InterruptedException, IOException {
         String[] columns = value.toString().split("\t+");
 
-        try {
-            final JSONObject redditSubmissionJSON = (JSONObject) parser.parse(columns[2]);
-            final String name = (String) redditSubmissionJSON.get("name");
+        RedditPost post = jsonPostFactory.fromJSON(columns[2]);
+        final String name = post.getName().toString();
 
-            postName.set(name);
-            postJSON.set(columns[2]);
-
-            context.write(this.postName, this.postJSON);
-        } catch (ParseException e) {
+        if (name.length() == 0) {
             return;
         }
+
+        postName.set(name);
+        context.write(this.postName, post);
     }
 }

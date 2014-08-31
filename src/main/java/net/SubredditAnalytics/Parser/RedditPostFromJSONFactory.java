@@ -40,7 +40,7 @@ public class RedditPostFromJSONFactory {
             redditPost.setScore(new IntWritable(score == null ? 0 : score.intValue()));
 
             final Boolean over_18 = (Boolean) postJSON.get("over_18");
-            redditPost.setOver_18(new BooleanWritable(over_18));
+            redditPost.setOver_18(new BooleanWritable(over_18 == null ? false : over_18));
 
             final String thumbnail = (String) postJSON.get("thumbnail");
             redditPost.setThumbnail(new Text(thumbnail == null ? "" : thumbnail));
@@ -52,7 +52,7 @@ public class RedditPostFromJSONFactory {
             redditPost.setDowns(new IntWritable(downs == null ? 0 : downs.intValue()));
 
             final Boolean is_self = (Boolean) postJSON.get("is_self");
-            redditPost.setIs_self(new BooleanWritable(is_self));
+            redditPost.setIs_self(new BooleanWritable(is_self == null ? false : is_self));
 
             final String name = (String) postJSON.get("name");
             redditPost.setName(new Text(name == null ? "" : name));

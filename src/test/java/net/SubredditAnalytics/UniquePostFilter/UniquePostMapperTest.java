@@ -1,5 +1,7 @@
 package net.SubredditAnalytics.UniquePostFilter;
 
+import net.SubredditAnalytics.Model.RedditPost;
+import net.SubredditAnalytics.Parser.RedditPostFromJSONFactory;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.MapDriver;
@@ -13,19 +15,24 @@ import java.io.IOException;
  */
 public class UniquePostMapperTest {
     private final static String inputLine = "2014-08-30T08:59:58Z\tra.submissions.post\t{\"name\":\"t3_2euwng\",\"last_seen\":1409389198}";
-    MapDriver<LongWritable, Text, Text, Text> mapDriver;
+    private RedditPostFromJSONFactory jsonPostFactory;
+    MapDriver<LongWritable, Text, Text, RedditPost> mapDriver;
 
     @Before
     public void setUp() {
-        mapDriver = new MapDriver<LongWritable, Text, Text, Text>();
+        mapDriver = new MapDriver<LongWritable, Text, Text, RedditPost>();
         UniquePostMapper mapper = new UniquePostMapper();
         mapDriver.setMapper(mapper);
+        jsonPostFactory = new RedditPostFromJSONFactory();
     }
 
     @Test
     public void mapperTest() throws IOException {
         mapDriver.withInput(new LongWritable(1), new Text(inputLine));
-        mapDriver.withOutput(new Text("t3_2euwng"), new Text("{\"name\":\"t3_2euwng\",\"last_seen\":1409389198}"));
+
+        RedditPost post = jsonPostFactory.fromJSON(inputLine.split("\t+")[2]);
+
+        mapDriver.withOutput(new Text("t3_2euwng"), post);
         mapDriver.runTest();
     }
 }

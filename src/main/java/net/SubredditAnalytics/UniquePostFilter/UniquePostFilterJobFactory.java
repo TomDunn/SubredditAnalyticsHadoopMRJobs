@@ -1,6 +1,7 @@
 package net.SubredditAnalytics.UniquePostFilter;
 
 import net.SubredditAnalytics.Jobs.MRJobFactory;
+import net.SubredditAnalytics.Model.RedditPost;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mapreduce.Job;
@@ -20,7 +21,7 @@ public class UniquePostFilterJobFactory implements MRJobFactory {
         job.setJarByClass(UniquePostFilterJobFactory.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(Text.class);
+        job.setOutputValueClass(RedditPost.class);
 
         job.setMapperClass(UniquePostMapper.class);
         job.setReducerClass(UniquePostReducer.class);

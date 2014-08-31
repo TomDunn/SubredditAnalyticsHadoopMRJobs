@@ -1,6 +1,7 @@
 package net.SubredditAnalytics.Model;
 
 import org.apache.hadoop.io.*;
+import org.json.simple.JSONObject;
 
 import java.io.DataInput;
 import java.io.DataOutput;
@@ -136,6 +137,31 @@ public class RedditPost implements WritableComparable<RedditPost> {
         result = 31 * result + (author != null ? author.hashCode() : 0);
         result = 31 * result + (last_seen != null ? last_seen.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject obj = new JSONObject();
+
+        obj.put("domain", domain.toString());
+        obj.put("subreddit", subreddit.toString());
+        obj.put("selftext", selftext.toString());
+        obj.put("id", id.toString());
+        obj.put("author", author.toString());
+        obj.put("score", score.get());
+        obj.put("over_18", over_18.get());
+        obj.put("thumbnail", thumbnail.toString());
+        obj.put("subreddit_id", subreddit_id.toString());
+        obj.put("downs", downs.get());
+        obj.put("is_self", is_self.get());
+        obj.put("name", name.toString());
+        obj.put("url", url.toString());
+        obj.put("title", title.toString());
+        obj.put("created_utc", created_utc.get());
+        obj.put("ups", ups.get());
+        obj.put("last_seen", last_seen.get());
+
+        return obj.toString();
     }
 
     public Text getDomain() {
