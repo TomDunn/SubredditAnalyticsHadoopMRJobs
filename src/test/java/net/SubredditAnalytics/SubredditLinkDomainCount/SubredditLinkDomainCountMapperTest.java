@@ -29,6 +29,7 @@ public class SubredditLinkDomainCountMapperTest {
     public void mapperTest() throws IOException {
         mapDriver.withInput(key, new Text(t1));
         mapDriver.withOutput(new Text("funny|imgur.com"), new IntWritable(1));
+        mapDriver.withOutput(new Text("all|imgur.com"), new IntWritable(1));
         mapDriver.runTest();
     }
 }

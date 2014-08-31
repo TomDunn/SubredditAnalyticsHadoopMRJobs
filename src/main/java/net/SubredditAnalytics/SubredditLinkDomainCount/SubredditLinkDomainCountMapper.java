@@ -24,5 +24,7 @@ public class SubredditLinkDomainCountMapper extends Mapper<Text, Text, Text, Int
 
         subredditDomainKey.set(subreddit + "|" + domain);
         context.write(subredditDomainKey, count);
+        subredditDomainKey.set("all" + "|" + domain);
+        context.write(subredditDomainKey, count);
     }
 }
