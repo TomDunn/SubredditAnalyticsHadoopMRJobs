@@ -13,21 +13,21 @@ import java.io.IOException;
  * Created by tom on 8/30/14.
  */
 public class SubredditLinkDomainCountMapperTest {
-    private MapDriver<Text, Text, Text, IntWritable> mapDriver;
+    private MapDriver<LongWritable, Text, Text, IntWritable> mapDriver;
 
     /* Test data */
-    final String t1 = "{\"domain\":\"imgur.com\",\"subreddit\":\"funny\"}";
+    final String t1 = "ID\t{\"domain\":\"imgur.com\",\"subreddit\":\"funny\"}";
     final Text key = new Text("");
 
     @Before
     public void setUp() {
-        mapDriver = new MapDriver<Text, Text, Text, IntWritable>();
+        mapDriver = new MapDriver<LongWritable, Text, Text, IntWritable>();
         mapDriver.setMapper(new SubredditLinkDomainCountMapper());
     }
 
     @Test
     public void mapperTest() throws IOException {
-        mapDriver.withInput(key, new Text(t1));
+        mapDriver.withInput(new LongWritable(1), new Text(t1));
         mapDriver.withOutput(new Text("funny|imgur.com"), new IntWritable(1));
         mapDriver.withOutput(new Text("all|imgur.com"), new IntWritable(1));
         mapDriver.runTest();

@@ -2,6 +2,7 @@ package net.SubredditAnalytics;
 
 import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountJobFactory;
 import net.SubredditAnalytics.Jobs.MRJobFactory;
+import net.SubredditAnalytics.SubredditLinkDomainCount.SubredditLinkDomainCountJobFactory;
 import net.SubredditAnalytics.UniquePostFilter.UniquePostFilterJobFactory;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.mapreduce.Job;
@@ -25,6 +26,7 @@ public class MRJobRunner {
 
         jobNameToFactory.put("filterPosts", new UniquePostFilterJobFactory());
         jobNameToFactory.put("hourlyPostCounts", new HourlyPostCountJobFactory());
+        jobNameToFactory.put("subredditLinkDomainCount", new SubredditLinkDomainCountJobFactory());
 
         final String jobName = args[0];
 
