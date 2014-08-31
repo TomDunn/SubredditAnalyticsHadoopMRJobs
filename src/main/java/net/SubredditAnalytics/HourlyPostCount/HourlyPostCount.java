@@ -1,4 +1,4 @@
-package net.SubredditAnalytics;
+package net.SubredditAnalytics.HourlyPostCount;
 
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.fs.Path;

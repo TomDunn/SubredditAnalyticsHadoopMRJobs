@@ -1,5 +1,6 @@
-package net.SubredditAnalytics;
+package net.SubredditAnalytics.HourlyPostCount;
 
+import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountReducer;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.mapreduce.ReduceDriver;

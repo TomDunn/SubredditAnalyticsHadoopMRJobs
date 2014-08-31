@@ -1,5 +1,6 @@
-package net.SubredditAnalytics;
+package net.SubredditAnalytics.HourlyPostCount;
 
+import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountMapper;
 import org.apache.hadoop.io.IntWritable;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.io.Text;

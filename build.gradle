@@ -23,7 +23,7 @@ dependencies {
 jar {
     version = "0.0.1"
     manifest {
-        attributes 'Main-Class': 'net.SubredditAnalytics.HourlyPostCount'
+        attributes 'Main-Class': 'net.SubredditAnalytics.MRJobRunner'
     }
 
     from {
