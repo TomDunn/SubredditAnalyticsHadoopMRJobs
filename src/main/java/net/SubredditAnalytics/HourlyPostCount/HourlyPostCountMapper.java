@@ -15,9 +15,9 @@ import java.math.BigDecimal;
 /**
  * Created by tom on 8/29/14.
  */
-public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,IntWritable> {
-    private final static IntWritable count = new IntWritable(1);
-    private Text time = new Text();
+public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,Text> {
+    private Text subredditDayKey = new Text();
+    private Text hourCountKey    = new Text();
 
     private final JSONParser parser = new JSONParser();
 
@@ -28,15 +28,32 @@ public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,IntWrit
         final long createdUTC = post.getCreated_utc().get();
         final String subreddit = post.getSubreddit().toString();
 
-        time.set(this.makeSubredditHourlyKey(subreddit, createdUTC));
+        subredditDayKey.set(this.makeSubredditDailyTimestampKey(subreddit, createdUTC));
+        hourCountKey.set(this.makeHourCountKey(createdUTC));
 
-        context.write(time, count);
+        context.write(subredditDayKey, hourCountKey);
     }
 
-    /* package private */ String makeSubredditHourlyKey(final String subredditName, final Number createdUTC) {
+    /* package private */ String makeHourCountKey(final Number createdUTC) {
+        final Long hourTS = this.getHourTimestamp(createdUTC);
+        return Long.toString(hourTS) + "|1";
+    }
+
+    /* package private */ Long getDayTimestamp(final Number createdUTC) {
+        final DateTime createdUTCDateTime = new DateTime(createdUTC.longValue() * 1000L, DateTimeZone.UTC);
+        final Long dayTS = createdUTCDateTime.getMillis() -  createdUTCDateTime.getMillisOfDay();
+        return dayTS / 1000L;
+    }
+
+    /* package private */ Long getHourTimestamp(final Number createdUTC) {
         final DateTime createdUTCDateTime = new DateTime(createdUTC.longValue() * 1000L, DateTimeZone.UTC);
         final DateTime hour = createdUTCDateTime.hourOfDay().roundFloorCopy();
         final long hourTS = hour.getMillis() / 1000L;
-        return subredditName + "|" + Long.toString(hourTS);
+        return hourTS;
+    }
+
+    /* package private */ String makeSubredditDailyTimestampKey(final String subredditName, final Number createdUTC) {
+        final Long ts = this.getDayTimestamp(createdUTC);
+        return subredditName + "|" + Long.toString(ts);
     }
 }

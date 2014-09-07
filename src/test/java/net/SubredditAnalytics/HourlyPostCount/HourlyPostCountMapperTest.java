@@ -16,8 +16,8 @@ import java.io.IOException;
  */
 public class HourlyPostCountMapperTest {
 
-    MapDriver<LongWritable, Text, Text, IntWritable> mapDriver;
-    private final static String jsonLine = "POST_ID\t{\"subreddit\":\"funny\",\"created_utc\":1409259817.0}";
+    MapDriver<LongWritable, Text, Text, Text> mapDriver;
+    private final static String jsonLine = "POST_ID\t{\"subreddit\":\"funny\",\"created_utc\":1410122835.0}";
 
     @Before
     public void setUp() {
@@ -29,19 +29,29 @@ public class HourlyPostCountMapperTest {
     @Test
     public void testMapper() throws IOException {
         mapDriver.withInput(new LongWritable(1), new Text(jsonLine));
-        mapDriver.withOutput(new Text("funny|1409259600"), new IntWritable(1));
+        mapDriver.withOutput(new Text("funny|1410048000"), new Text("1410120000|1"));
         mapDriver.runTest();
     }
 
     @Test
-    public void testMapperKeyMaker() {
+    public void testMakeSubredditDailyTimestampKey() {
         final HourlyPostCountMapper mapper = new HourlyPostCountMapper();
 
         // unix timestamp
         final Number TS         = 1409426740L;
         final String subreddit  = "funny";
 
-        final String key = mapper.makeSubredditHourlyKey(subreddit, TS);
-        Assert.assertEquals("Key should equal funny|1409425200", "funny|1409425200", key);
+        final String key = mapper.makeSubredditDailyTimestampKey(subreddit, TS);
+        Assert.assertEquals("Key should equal funny|1409356800", "funny|1409356800", key);
+    }
+
+    @Test
+    public void testGetDayTS() {
+        final Long timestamp = 1410122835L;
+        final Long expectedTimestamp = 1410048000L;
+
+        final HourlyPostCountMapper mapper = new HourlyPostCountMapper();
+
+        Assert.assertEquals("Timestamp should equal Sept 7th 2014 at 00:00 UTC", expectedTimestamp, mapper.getDayTimestamp(1410122835));
     }
 }

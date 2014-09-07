@@ -21,7 +21,7 @@ public class HourlyPostCountJobFactory implements MRJobFactory {
         job.setJarByClass(HourlyPostCountJobFactory.class);
 
         job.setOutputKeyClass(Text.class);
-        job.setOutputValueClass(IntWritable.class);
+        job.setOutputValueClass(Text.class);
 
         job.setMapperClass(HourlyPostCountMapper.class);
         job.setReducerClass(HourlyPostCountReducer.class);
