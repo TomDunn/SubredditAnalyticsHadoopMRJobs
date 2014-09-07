@@ -24,6 +24,6 @@ Make sure that s3Out does not exist before the job is run, this will fail the jo
 
 ## TODO
 
-1. Break code into modules, HourlyPostCount should be at the top level of the package.
-2. Add the duplicate post reducer, often catch the same posts multiple times. Just keep the last seen instance.
-3. Resolve the MRUnit issue, currently I have hardcoded the jar into the repo. MVN needs to fix the 404 issue when downloading MRUnit.
+1. Resolve the MRUnit issue, currently I have hardcoded the jar into the repo. MVN needs to fix the 404 issue when downloading MRUnit.
+2. Address some of the TODOs in comments.
+3. Add more analytics jobs.
