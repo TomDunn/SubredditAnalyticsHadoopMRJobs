@@ -56,10 +56,11 @@ public class MRJobRunner {
         DateTime dateTime = new DateTime(DateTimeZone.UTC);
 
         final String nowTimestamp = Long.toString(dateTime.now().getMillis() / 1000L);
+        final Path baseJobOutPath = new Path(baseOutPath.toString() + "/" + nowTimestamp);
 
         /* Unique Post Job */
         Job uniquePostJob = (new UniquePostFilterJobFactory()).makeMapReduceJob();
-        Path uniquePostOutPath = new Path(baseOutPath + "/UNIQUE_POSTS/" + nowTimestamp);
+        Path uniquePostOutPath = new Path(baseJobOutPath.toString() + "/" + "UNIQUE_POSTS");
 
         FileInputFormat.addInputPath(uniquePostJob, inPath);
         FileOutputFormat.setOutputPath(uniquePostJob, uniquePostOutPath);
@@ -68,7 +69,7 @@ public class MRJobRunner {
 
         /* Hourly post count jobs */
         Job hourlyPostCountJob = (new HourlyPostCountJobFactory()).makeMapReduceJob();
-        Path hourlyPostCountOutPath = new Path(baseOutPath + "/HOURLY_POST_COUNTS/" + nowTimestamp);
+        Path hourlyPostCountOutPath = new Path(baseJobOutPath.toString() + "/HOURLY_POST_COUNTS");
 
         FileInputFormat.addInputPath(hourlyPostCountJob, uniquePostOutPath);
         FileOutputFormat.setOutputPath(hourlyPostCountJob, hourlyPostCountOutPath);
@@ -77,7 +78,7 @@ public class MRJobRunner {
 
         /* Domain counts */
         Job postDomainCountJob = (new SubredditLinkDomainCountJobFactory()).makeMapReduceJob();
-        Path postDomainCountOutPath = new Path(baseOutPath + "/DOMAIN_COUNTS/" + nowTimestamp);
+        Path postDomainCountOutPath = new Path(baseJobOutPath.toString() + "/DOMAIN_COUNTS");
 
         FileInputFormat.addInputPath(postDomainCountJob, uniquePostOutPath);
         FileOutputFormat.setOutputPath(postDomainCountJob, postDomainCountOutPath);
@@ -86,7 +87,7 @@ public class MRJobRunner {
 
         /* Top Domains */
         Job topDomainJob = (new TopDomainJobFactory()).makeMapReduceJob();
-        Path topDomainOutPath = new Path(baseOutPath + "/TOP_DOMAINS/" + nowTimestamp);
+        Path topDomainOutPath = new Path(baseJobOutPath.toString() + "/TOP_DOMAINS");
 
         FileInputFormat.addInputPath(topDomainJob, postDomainCountOutPath);
         FileOutputFormat.setOutputPath(topDomainJob, topDomainOutPath);
