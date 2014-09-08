@@ -14,9 +14,7 @@ public class UniquePostMapper extends Mapper<LongWritable, Text, Text, RedditPos
     private Text postName = new Text();
 
     protected void map(LongWritable key, Text value, Context context) throws InterruptedException, IOException {
-        String[] columns = value.toString().split("\t+");
-
-        RedditPost post = RedditPost.fromJSON(columns[2]);
+        RedditPost post = RedditPost.fromJSON(value.toString());
         final String name = post.getName().toString();
 
         if (name.length() == 0) {

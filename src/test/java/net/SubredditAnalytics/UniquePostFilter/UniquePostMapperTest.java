@@ -13,7 +13,7 @@ import java.io.IOException;
  * Created by tom on 8/30/14.
  */
 public class UniquePostMapperTest {
-    private final static String inputLine = "2014-08-30T08:59:58Z\tra.submissions.post\t{\"name\":\"t3_2euwng\",\"last_seen\":1409389198}";
+    private final static String inputLine = "{\"name\":\"t3_2euwng\",\"last_seen\":1409389198}";
     MapDriver<LongWritable, Text, Text, RedditPost> mapDriver;
 
     @Before
@@ -28,7 +28,7 @@ public class UniquePostMapperTest {
         mapDriver.withInput(new LongWritable(1), new Text(inputLine));
 
         RedditPost post = new RedditPost();
-        post.loadFromJSONString(inputLine.split("\t+")[2]);
+        post.loadFromJSONString(inputLine);
 
         mapDriver.withOutput(new Text("t3_2euwng"), post);
         mapDriver.runTest();
