@@ -30,6 +30,7 @@ public class HourlyPostCountMapperTest {
     public void testMapper() throws IOException {
         mapDriver.withInput(new LongWritable(1), new Text(jsonLine));
         mapDriver.withOutput(new Text("funny|1410048000"), new Text("1410120000|1"));
+        mapDriver.withOutput(new Text("all|1410048000"), new Text("1410120000|1"));
         mapDriver.runTest();
     }
 

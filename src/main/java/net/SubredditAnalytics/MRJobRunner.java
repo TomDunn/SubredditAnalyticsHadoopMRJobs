@@ -2,6 +2,7 @@ package net.SubredditAnalytics;
 
 import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountJobFactory;
 import net.SubredditAnalytics.Jobs.MRJobFactory;
+import net.SubredditAnalytics.SubmissionXPosts.SubmissionXPostJobFactory;
 import net.SubredditAnalytics.SubredditLinkDomainCount.SubredditLinkDomainCountJobFactory;
 import net.SubredditAnalytics.TopDomains.TopDomainJobFactory;
 import net.SubredditAnalytics.UniquePostFilter.UniquePostFilterJobFactory;
@@ -55,12 +56,9 @@ public class MRJobRunner {
     public static void runAll(final Path inPath, final Path baseOutPath) throws ClassNotFoundException, InterruptedException, IOException {
         DateTime dateTime = new DateTime(DateTimeZone.UTC);
 
-        final String nowTimestamp = Long.toString(dateTime.now().getMillis() / 1000L);
-        final Path baseJobOutPath = new Path(baseOutPath.toString() + "/" + nowTimestamp);
-
         /* Unique Post Job */
         Job uniquePostJob = (new UniquePostFilterJobFactory()).makeMapReduceJob();
-        Path uniquePostOutPath = new Path(baseJobOutPath.toString() + "/" + "UNIQUE_POSTS");
+        Path uniquePostOutPath = new Path(baseOutPath.toString() + "/" + "UNIQUE_POSTS");
 
         FileInputFormat.addInputPath(uniquePostJob, inPath);
         FileOutputFormat.setOutputPath(uniquePostJob, uniquePostOutPath);
@@ -69,7 +67,7 @@ public class MRJobRunner {
 
         /* Hourly post count jobs */
         Job hourlyPostCountJob = (new HourlyPostCountJobFactory()).makeMapReduceJob();
-        Path hourlyPostCountOutPath = new Path(baseJobOutPath.toString() + "/HOURLY_POST_COUNTS");
+        Path hourlyPostCountOutPath = new Path(baseOutPath.toString() + "/HOURLY_POST_COUNTS");
 
         FileInputFormat.addInputPath(hourlyPostCountJob, uniquePostOutPath);
         FileOutputFormat.setOutputPath(hourlyPostCountJob, hourlyPostCountOutPath);
@@ -78,7 +76,7 @@ public class MRJobRunner {
 
         /* Domain counts */
         Job postDomainCountJob = (new SubredditLinkDomainCountJobFactory()).makeMapReduceJob();
-        Path postDomainCountOutPath = new Path(baseJobOutPath.toString() + "/DOMAIN_COUNTS");
+        Path postDomainCountOutPath = new Path(baseOutPath.toString() + "/DOMAIN_COUNTS");
 
         FileInputFormat.addInputPath(postDomainCountJob, uniquePostOutPath);
         FileOutputFormat.setOutputPath(postDomainCountJob, postDomainCountOutPath);
@@ -87,11 +85,20 @@ public class MRJobRunner {
 
         /* Top Domains */
         Job topDomainJob = (new TopDomainJobFactory()).makeMapReduceJob();
-        Path topDomainOutPath = new Path(baseJobOutPath.toString() + "/TOP_DOMAINS");
+        Path topDomainOutPath = new Path(baseOutPath.toString() + "/TOP_DOMAINS");
 
         FileInputFormat.addInputPath(topDomainJob, postDomainCountOutPath);
         FileOutputFormat.setOutputPath(topDomainJob, topDomainOutPath);
 
         topDomainJob.waitForCompletion(true);
+
+        /* X-posts */
+        Job submissionXPostJob = (new SubmissionXPostJobFactory().makeMapReduceJob());
+        Path submissionXPostOutPath = new Path(baseOutPath.toString() + "/SUBMISSION_X_POSTS");
+
+        FileInputFormat.addInputPath(submissionXPostJob, uniquePostOutPath);
+        FileOutputFormat.setOutputPath(submissionXPostJob, submissionXPostOutPath);
+
+        submissionXPostJob.waitForCompletion(true);
     }
 }

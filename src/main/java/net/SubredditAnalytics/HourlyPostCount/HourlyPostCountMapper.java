@@ -32,6 +32,9 @@ public class HourlyPostCountMapper extends Mapper<LongWritable,Text,Text,Text> {
         hourCountKey.set(this.makeHourCountKey(createdUTC));
 
         context.write(subredditDayKey, hourCountKey);
+
+        subredditDayKey.set(this.makeSubredditDailyTimestampKey("all", createdUTC));
+        context.write(subredditDayKey, hourCountKey);
     }
 
     /* package private */ String makeHourCountKey(final Number createdUTC) {

@@ -9,7 +9,4 @@ mkdir   -p $OUTPATH
 rm      -rf $OUTPATH
 mkdir   -p $OUTPATH
 
-java -jar $JAR filterPosts $INPATH "$OUTPATH/UNIQ_POSTS"
-java -jar $JAR hourlyPostCounts "$OUTPATH/UNIQ_POSTS" "$OUTPATH/HOURLY_POST_COUNTS"
-java -jar $JAR subredditLinkDomainCount "$OUTPATH/UNIQ_POSTS" "$OUTPATH/SUBREDDIT_LINK_DOMAIN_COUNTS"
-java -jar $JAR topDomains "$OUTPATH/SUBREDDIT_LINK_DOMAIN_COUNTS" "$OUTPATH/TOP_DOMAINS"
+java -jar $JAR RUN_ALL $INPATH $OUTPATH
