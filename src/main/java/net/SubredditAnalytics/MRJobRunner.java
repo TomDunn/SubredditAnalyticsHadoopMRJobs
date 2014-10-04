@@ -4,6 +4,7 @@ import net.SubredditAnalytics.HourlyPostCount.HourlyPostCountJobFactory;
 import net.SubredditAnalytics.Jobs.MRJobFactory;
 import net.SubredditAnalytics.SubmissionXPosts.SubmissionXPostJobFactory;
 import net.SubredditAnalytics.SubredditLinkDomainCount.SubredditLinkDomainCountJobFactory;
+import net.SubredditAnalytics.SubredditsActivePastWeek.SubredditsActivePastWeekJobFactory;
 import net.SubredditAnalytics.TopDomains.TopDomainJobFactory;
 import net.SubredditAnalytics.UniquePostFilter.UniquePostFilterJobFactory;
 import org.apache.hadoop.fs.Path;
@@ -100,5 +101,14 @@ public class MRJobRunner {
         FileOutputFormat.setOutputPath(submissionXPostJob, submissionXPostOutPath);
 
         submissionXPostJob.waitForCompletion(true);
+
+        /* active subreddits */
+        Job activeSubredditsJob = (new SubredditsActivePastWeekJobFactory().makeMapReduceJob());
+        Path subredditsActiveOutPath = new Path(baseOutPath.toString() + "/SUBREDDITS_ACTIVE_PAST_WEEK");
+
+        FileInputFormat.addInputPath(activeSubredditsJob, uniquePostOutPath);
+        FileOutputFormat.setOutputPath(activeSubredditsJob, subredditsActiveOutPath);
+
+        activeSubredditsJob.waitForCompletion(true);
     }
 }
